@@ -1,0 +1,42 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Product;
+use App\Category;
+
+class CategoryController extends Controller
+{
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function index()
+    {
+        $categories = Category::all();
+        $products   = Product::with('galleries','user')->latest()->paginate(8);
+
+        return view('pages.category',[
+            'categories' => $categories,
+            'products'   => $products
+        ]);
+    }
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function detail(Request $request, $slug)
+    {
+        $categories = Category::all();
+        $category   = Category::where('slug',$slug)->firstOrFail();
+        $products   = Product::with('galleries','user')->where('categories_id', $category->id)->latest()->paginate(8);
+
+        return view('pages.category',[
+            'categories' => $categories,
+            'products'   => $products
+        ]);
+    }
+}
